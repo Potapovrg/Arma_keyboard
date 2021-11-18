@@ -47,6 +47,12 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+#define W 0x1A
+#define S 0x16
+#define PLUS 0x57
+#define MINUS 0x56
+#define ESC 0x29
+#define DEL 0x2A
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -109,18 +115,20 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	if (!(HAL_GPIO_ReadPin(GPIOB,W_BTN_Pin)))
+		{
+		 HAL_GPIO_TogglePin(GPIOC,LED_Pin);
+		 keyboardhid.KEYCODE1 = W;
+		 USBD_HID_SendReport(&hUsbDeviceFS, &keyboardhid, sizeof (keyboardhid));
+		}
+	else
+	{
+		 keyboardhid.KEYCODE1 = 0x00;
+		 USBD_HID_SendReport(&hUsbDeviceFS, &keyboardhid, sizeof (keyboardhid));
+	}
+	 HAL_Delay (50);
     /* USER CODE END WHILE */
-	  /*keyboardhid.MODIFIER = 0x02;  // left Shift
-	  keyboardhid.KEYCODE1 = 0x04;  // press 'a'
-	  keyboardhid.KEYCODE2 = 0x05;  // press 'b'
-	  USBD_HID_SendReport(&hUsbDeviceFS, &keyboardhid, sizeof (keyboardhid));
-	  HAL_Delay (50);
 
-	  keyboardhid.MODIFIER = 0x00;  // shift release
-	  keyboardhid.KEYCODE1 = 0x00;  // release key
-	  keyboardhid.KEYCODE2 = 0x00;  // release key
-	  USBD_HID_SendReport(&hUsbDeviceFS, &keyboardhid, sizeof (keyboardhid));
-	  HAL_Delay (1000);*/
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -178,11 +186,31 @@ void SystemClock_Config(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOC_CLK_ENABLE();
   __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
+
+  /*Configure GPIO pin : LED_Pin */
+  GPIO_InitStruct.Pin = LED_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : S_BTN_Pin RAY_BTN_Pin PLUS_BTN_Pin MINUS_BTN_Pin
+                           W_BTN_Pin ESC_BTN_Pin */
+  GPIO_InitStruct.Pin = S_BTN_Pin|RAY_BTN_Pin|PLUS_BTN_Pin|MINUS_BTN_Pin
+                          |W_BTN_Pin|ESC_BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }
 
