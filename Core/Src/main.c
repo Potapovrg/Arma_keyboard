@@ -48,11 +48,11 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 #define W 0x1A
-#define S 0x16
+#define Q 0x16
 #define PLUS 0x57
 #define MINUS 0x56
 #define ESC 0x29
-#define DEL 0x2A
+#define SPACE 0x2C
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -63,7 +63,7 @@ extern USBD_HandleTypeDef hUsbDeviceFS;
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t button_flag=0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,7 +115,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-	if (!(HAL_GPIO_ReadPin(GPIOB,W_BTN_Pin)))
+	/*if (!(HAL_GPIO_ReadPin(GPIOB,W_BTN_Pin)))
 		{
 		 HAL_GPIO_TogglePin(GPIOC,LED_Pin);
 		 keyboardhid.KEYCODE1 = W;
@@ -125,8 +125,34 @@ int main(void)
 	{
 		 keyboardhid.KEYCODE1 = 0x00;
 		 USBD_HID_SendReport(&hUsbDeviceFS, &keyboardhid, sizeof (keyboardhid));
-	}
-	 HAL_Delay (50);
+	}*/
+	  button_flag=0;
+	  if (!(HAL_GPIO_ReadPin(GPIOB,W_BTN_Pin))) {keyboardhid.KEYCODE1 = W; button_flag=1;}
+	  if (!(HAL_GPIO_ReadPin(GPIOB,S_BTN_Pin))) {keyboardhid.KEYCODE2 = Q; button_flag=1;}
+	  if (!(HAL_GPIO_ReadPin(GPIOB,PLUS_BTN_Pin))) {keyboardhid.KEYCODE3 = PLUS; button_flag=1;}
+	  if (!(HAL_GPIO_ReadPin(GPIOB,MINUS_BTN_Pin))) {keyboardhid.KEYCODE4 = MINUS; button_flag=1;}
+	  if (!(HAL_GPIO_ReadPin(GPIOB,ESC_BTN_Pin))) {keyboardhid.KEYCODE5 = ESC; button_flag=1;}
+	  if (!(HAL_GPIO_ReadPin(GPIOB,RAY_BTN_Pin))) {keyboardhid.KEYCODE6 = SPACE; button_flag=1;}
+
+	  if (button_flag==1)
+	  {
+		  HAL_GPIO_TogglePin(GPIOC,LED_Pin);
+		  USBD_HID_SendReport(&hUsbDeviceFS, &keyboardhid, sizeof (keyboardhid));
+		  HAL_Delay (50);
+		  button_flag=0;
+	  }
+	  else if (button_flag==0)
+	  {
+		  keyboardhid.KEYCODE1 = 0;
+		  keyboardhid.KEYCODE2 = 0;
+		  keyboardhid.KEYCODE3 = 0;
+		  keyboardhid.KEYCODE4 = 0;
+		  keyboardhid.KEYCODE5 = 0;
+		  keyboardhid.KEYCODE6 = 0;
+		  USBD_HID_SendReport(&hUsbDeviceFS, &keyboardhid, sizeof (keyboardhid));
+		  HAL_Delay (50);
+	  }
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
