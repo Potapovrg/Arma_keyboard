@@ -133,7 +133,7 @@ int main(void)
 	  if (!(HAL_GPIO_ReadPin(GPIOB,MINUS_BTN_Pin))) {keyboardhid.KEYCODE4 = MINUS; button_flag=1;}
 	  if (!(HAL_GPIO_ReadPin(GPIOB,ESC_BTN_Pin))) {keyboardhid.KEYCODE5 = ESC; button_flag=1;}
 	  if (!(HAL_GPIO_ReadPin(GPIOB,RAY_BTN_Pin))) {keyboardhid.KEYCODE6 = SPACE; button_flag=1;}
-
+	  if (HAL_GPIO_ReadPin(GPIOB,TEST_BTN_Pin)) {keyboardhid.KEYCODE6 = MINUS; button_flag=1;}
 	  if (button_flag==1)
 	  {
 		  HAL_GPIO_TogglePin(GPIOC,LED_Pin);
@@ -223,6 +223,9 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_SET);
 
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOB, GPIO_PIN_9, GPIO_PIN_SET);
+
   /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -236,6 +239,19 @@ static void MX_GPIO_Init(void)
                           |W_BTN_Pin|ESC_BTN_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
   GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : TEST_BTN_Pin */
+  GPIO_InitStruct.Pin = TEST_BTN_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
+  HAL_GPIO_Init(TEST_BTN_GPIO_Port, &GPIO_InitStruct);
+
+  /*Configure GPIO pin : PB9 */
+  GPIO_InitStruct.Pin = GPIO_PIN_9;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 }

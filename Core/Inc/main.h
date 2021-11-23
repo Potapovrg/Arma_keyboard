@@ -72,6 +72,8 @@ void Error_Handler(void);
 #define W_BTN_GPIO_Port GPIOB
 #define ESC_BTN_Pin GPIO_PIN_15
 #define ESC_BTN_GPIO_Port GPIOB
+#define TEST_BTN_Pin GPIO_PIN_7
+#define TEST_BTN_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
